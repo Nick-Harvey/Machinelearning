@@ -1,0 +1,25 @@
+{
+  "pipeline": {
+    "name": "flight_scraper”
+  },
+  "transform": {
+    "cmd": [ "curl",
+        "-0",
+        "https://flights-dot-flightdata-201923.appspot.com/ingest"
+    ],
+    "acceptReturnCode": [0]
+  },
+  "parallelism": "1",
+  "input": {
+    "atom": {
+      "repo": "2018flights"
+    },
+  "input": {
+    "cron": {
+      "name": "tick",
+      "spec": "0 0 1 * *"
+    }
+  },
+  "incremental": true
+  }
+}

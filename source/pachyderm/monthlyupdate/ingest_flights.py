@@ -14,7 +14,7 @@ from google.cloud.storage import Blob
 def download(YEAR, MONTH, destdir):
    '''
      Downloads on-time performance data and returns local filename
-     YEAR e.g.'2015'
+     YEAR e.g.'2017'
      MONTH e.g. '01 for January
    '''
    logging.info('Requesting data for {}-{}-*'.format(YEAR, MONTH))
@@ -107,7 +107,7 @@ def ingest(year, month, bucket):
       bts_csv = zip_to_csv(zipfile, tempdir)
       csvfile = remove_quotes_comma(bts_csv, year, month)
       verify_ingest(csvfile)
-      gcsloc = 'flights/raw/{}'.format(os.path.basename(csvfile))
+      gcsloc = 'raw/2018/' + month + '/','{}'.format(os.path.basename(csvfile))
       return upload(csvfile, bucket, gcsloc)
    finally:
       logging.debug('Cleaning up by removing {}'.format(tempdir))
@@ -117,9 +117,10 @@ def next_month(bucketname):
    '''
      Finds which months are on GCS, and returns next year,month to download
    '''
+   global month
    client = storage.Client()
    bucket = client.get_bucket(bucketname)
-   blobs  = list(bucket.list_blobs(prefix='flights/raw/'))
+   blobs  = list(bucket.list_blobs(prefix='raw/2018/' + month))
    files = [blob.name for blob in blobs if 'csv' in blob.name] # csv files only
    lastfile = os.path.basename(files[-1])
    logging.debug('The latest file on GCS is {}'.format(lastfile))
@@ -132,7 +133,7 @@ def compute_next_month(year, month):
    dt = dt + datetime.timedelta(30) # will always go to next month
    logging.debug('The next month is {}'.format(dt))
    return '{}'.format(dt.year), '{:02d}'.format(dt.month)
-
+  
 if __name__ == '__main__':
    import argparse
    parser = argparse.ArgumentParser(description='ingest flights data from BTS website to Google Cloud Storage')

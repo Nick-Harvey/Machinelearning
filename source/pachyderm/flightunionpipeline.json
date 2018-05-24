@@ -1,0 +1,27 @@
+{
+  "pipeline": {
+    "name": "flightsanalysis”
+  },
+  "transform": {
+    "cmd": [ "curl",
+        "-0",
+        "https://flights-dot-flightdata-201923.appspot.com/ingest"
+    ],
+    "acceptReturnCode": [0]
+  },
+  "parallelism": "1",
+  "input": {
+    "union" : [
+      {
+        "atom": {
+          "repo": "2017flights",
+          "glob": "/*"
+      },
+        "atom": {
+          "repo": "2018flights",
+          "glob": "/*"
+        }
+      }
+    ] 
+  }
+}

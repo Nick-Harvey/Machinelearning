@@ -7,7 +7,7 @@ manual_scaling:
 
 #[START env]
 env_variables:
-        CLOUD_STORAGE_BUCKET: nick-flight-data
+    CLOUD_STORAGE_BUCKET: 2017_2018_flights
 #[END env]
 
 handlers:
