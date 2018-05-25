@@ -1,10 +1,12 @@
 import datetime, warnings, scipy 
 import pandas as pd
 import numpy as np
-import seaborn as sns
 import matplotlib as mpl
+mpl.use('pdf')
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import seaborn as sns
 from matplotlib.patches import ConnectionPatch
 from collections import OrderedDict
 from matplotlib.gridspec import GridSpec
@@ -85,7 +87,7 @@ dtypes = {
     'DISTANCE': np.float32, 
 }
 
-path = '/Users/Nick/Git/data-science-on-gcp/02_ingest/flights/01/201701.csv' # use your path
+path = './flight_data/201701.csv' # use your path
 # allFiles = glob.glob(path + "01/*.csv")
 # print("printing allfiles")
 # print(allFiles)
@@ -243,6 +245,8 @@ df2['AIRLINE'] = df2['CARRIER'].replace(abbr_companies)
 
 abbr_companies = airlines_names.set_index('IATA_CODE')['AIRLINE'].to_dict()
 
+
+#### General Stats #####
 def get_stats(group):
     return {'min': group.min(), 'max': group.max(),
             'count': group.count(), 'mean': group.mean()}
@@ -262,118 +266,200 @@ global_stats
 
 #___________________________________________
 # Model function used to fit the histograms
-def func(x, a, b):
-    return a * np.exp(-x/b)
-#-------------------------------------------
-points = [] ; label_company = []
-fig = plt.figure(1, figsize=(11,11))
-i = 0
-for carrier_name in [abbr_companies[x] for x in global_stats.index]:
-    i += 1
-    ax = fig.add_subplot(5,3,i)    
-    #_________________________
-    # Fit of the distribution
-    n, bins, patches = plt.hist(x = df2[df2['AIRLINE']==carrier_name]['DEP_DELAY'],
-                                range = (15,180), normed=True, bins= 60)
-    bin_centers = bins[:-1] + 0.5 * (bins[1:] - bins[:-1])    
-    popt, pcov = curve_fit(func, bin_centers, n, p0 = [1, 2])
-    #___________________________
-    # bookeeping of the results
-    points.append(popt)
-    label_company.append(carrier_name)
-    #______________________
-    # draw the fit curve
-    plt.plot(bin_centers, func(bin_centers, *popt), 'r-', linewidth=3)    
-    #_____________________________________
-    # define tick labels for each subplot
-    if i < 10:
-        ax.set_xticklabels(['' for x in ax.get_xticks()])
-    else:
-        ax.set_xticklabels(['{:2.0f}h{:2.0f}m'.format(*[int(y) for y in divmod(x,60)])
-                            for x in ax.get_xticks()])
-    #______________
-    # subplot title
-    plt.title(carrier_name, fontsize = 14, fontweight = 'bold', color = 'darkblue')
-    #____________
-    # axes labels 
-    if i == 4:
-        ax.text(-0.3,0.9,'Normalized count of flights', fontsize=16, rotation=90,
-            color='k', horizontalalignment='center', transform = ax.transAxes)
-    if i == 14:
-        ax.text( 0.5, -0.5 ,'Delay at origin', fontsize=16, rotation=0,
-            color='k', horizontalalignment='center', transform = ax.transAxes)
-    #___________________________________________
-    # Legend: values of the a and b coefficients
-    ax.text(0.68, 0.7, 'a = {}\nb = {}'.format(round(popt[0],2), round(popt[1],1)),
-            style='italic', transform=ax.transAxes, fontsize = 12, family='fantasy',
-            bbox={'facecolor':'tomato', 'alpha':0.8, 'pad':5})
+# def func(x, a, b):
+#     return a * np.exp(-x/b)
+# #-------------------------------------------
+# points = [] ; label_company = []
+# fig = plt.figure(1, figsize=(11,11))
+# i = 0
+# for carrier_name in [abbr_companies[x] for x in global_stats.index]:
+#     i += 1
+#     ax = fig.add_subplot(5,3,i)    
+#     #_________________________
+#     # Fit of the distribution
+#     n, bins, patches = plt.hist(x = df2[df2['AIRLINE']==carrier_name]['DEP_DELAY'],
+#                                 range = (15,180), normed=True, bins= 60)
+#     bin_centers = bins[:-1] + 0.5 * (bins[1:] - bins[:-1])    
+#     popt, pcov = curve_fit(func, bin_centers, n, p0 = [1, 2])
+#     #___________________________
+#     # bookeeping of the results
+#     points.append(popt)
+#     label_company.append(carrier_name)
+#     #______________________
+#     # draw the fit curve
+#     plt.plot(bin_centers, func(bin_centers, *popt), 'r-', linewidth=3)    
+#     #_____________________________________
+#     # define tick labels for each subplot
+#     if i < 10:
+#         ax.set_xticklabels(['' for x in ax.get_xticks()])
+#     else:
+#         ax.set_xticklabels(['{:2.0f}h{:2.0f}m'.format(*[int(y) for y in divmod(x,60)])
+#                             for x in ax.get_xticks()])
+#     #______________
+#     # subplot title
+#     plt.title(carrier_name, fontsize = 14, fontweight = 'bold', color = 'darkblue')
+#     #____________
+#     # axes labels 
+#     if i == 4:
+#         ax.text(-0.3,0.9,'Normalized count of flights', fontsize=16, rotation=90,
+#             color='k', horizontalalignment='center', transform = ax.transAxes)
+#     if i == 14:
+#         ax.text( 0.5, -0.5 ,'Delay at origin', fontsize=16, rotation=0,
+#             color='k', horizontalalignment='center', transform = ax.transAxes)
+#     #___________________________________________
+#     # Legend: values of the a and b coefficients
+#     ax.text(0.68, 0.7, 'a = {}\nb = {}'.format(round(popt[0],2), round(popt[1],1)),
+#             style='italic', transform=ax.transAxes, fontsize = 12, family='fantasy',
+#             bbox={'facecolor':'tomato', 'alpha':0.8, 'pad':5})
     
-plt.tight_layout()
+# plt.tight_layout()
+
+class Figure_style():
+    #_________________________________________________________________
+    def __init__(self, size_x = 11, size_y = 5, nrows = 1, ncols = 1):
+        sns.set_style("white")
+        sns.set_context("notebook", font_scale=1.2, rc={"lines.linewidth": 2.5})
+        plt.savefig("output.png", dpi=400)
+        self.fig, axs = plt.subplots(nrows = nrows, ncols = ncols, figsize=(size_x,size_y,))
+        #________________________________
+        # convert self.axs to 2D array
+        if nrows == 1 and ncols == 1:
+            self.axs = np.reshape(axs, (1, -1))
+        elif nrows == 1:
+            self.axs = np.reshape(axs, (1, -1))
+        elif ncols == 1:
+            self.axs = np.reshape(axs, (-1, 1))
+    #_____________________________
+    def pos_update(self, ix, iy):
+        self.ix, self.iy = ix, iy
+    #_______________
+    def style(self):
+        self.axs[self.ix, self.iy].spines['right'].set_visible(False)
+        self.axs[self.ix, self.iy].spines['top'].set_visible(False)
+        self.axs[self.ix, self.iy].yaxis.grid(color='lightgray', linestyle=':')
+        self.axs[self.ix, self.iy].xaxis.grid(color='lightgray', linestyle=':')
+        self.axs[self.ix, self.iy].tick_params(axis='both', which='major',
+                                               labelsize=10, size = 5)
+    #________________________________________
+    def draw_legend(self, location='upper right'):
+        legend = self.axs[self.ix, self.iy].legend(loc = location, shadow=True,
+                                        facecolor = 'g', frameon = True)
+        legend.get_frame().set_facecolor('whitesmoke')
+    #_________________________________________________________________________________
+    def cust_plot(self, x, y, color='b', linestyle='-', linewidth=1, marker=None, label=''):
+        if marker:
+            markerfacecolor, marker, markersize = marker[:]
+            self.axs[self.ix, self.iy].plot(x, y, color = color, linestyle = linestyle,
+                                linewidth = linewidth, marker = marker, label = label,
+                                markerfacecolor = markerfacecolor, markersize = markersize)
+        else:
+            self.axs[self.ix, self.iy].plot(x, y, color = color, linestyle = linestyle,
+                                        linewidth = linewidth, label=label)
+        self.fig.autofmt_xdate()
+    #________________________________________________________________________
+    def cust_plot_date(self, x, y, color='lightblue', linestyle='-',
+                       linewidth=1, markeredge=False, label=''):
+        markeredgewidth = 1 if markeredge else 0
+        self.axs[self.ix, self.iy].plot_date(x, y, color='lightblue', markeredgecolor='grey',
+                                  markeredgewidth = markeredgewidth, label=label)
+    #________________________________________________________________________
+    def cust_scatter(self, x, y, color = 'lightblue', markeredge = False, label=''):
+        markeredgewidth = 1 if markeredge else 0
+        self.axs[self.ix, self.iy].scatter(x, y, color=color,  edgecolor='grey',
+                                  linewidths = markeredgewidth, label=label)    
+    #___________________________________________
+    def set_xlabel(self, label, fontsize = 14):
+        self.axs[self.ix, self.iy].set_xlabel(label, fontsize = fontsize)
+    #___________________________________________
+    def set_ylabel(self, label, fontsize = 14):
+        self.axs[self.ix, self.iy].set_ylabel(label, fontsize = fontsize)
+    #____________________________________
+    def set_xlim(self, lim_inf, lim_sup):
+        self.axs[self.ix, self.iy].set_xlim([lim_inf, lim_sup])
+    #____________________________________
+    def set_ylim(self, lim_inf, lim_sup):
+        self.axs[self.ix, self.iy].set_ylim([lim_inf, lim_sup])
 
 
-#print(pd.DataFrame(df))
+#-------------------------------------------#
+#                                           #
+#         Predict Flight delays             #       
+#                                           #
+#-------------------------------------------#
 
-df.info()
+carrier = 'DL'
+check_airports = df[(df['CARRIER'] == carrier)]['DEP_DELAY'].groupby(
+                         df['ORIGIN']).apply(get_stats).unstack()
+check_airports.sort_values('count', ascending = False, inplace = True)
+check_airports[-5:]
 
-# Split the data into a training set and an eval set.
+df_train = df[df['CRS_DEP_TIME'].apply(lambda x:x.date()) < datetime.date(2018, 1, 20)]
+df_test  = df[df['CRS_DEP_TIME'].apply(lambda x:x.date()) > datetime.date(2018, 1, 20)]
+df = df_train
 
-training_data = df
+print(df_train.shape)
 
-#eval_data = df.iloc[1]
-#test_data = df.iloc[:10]
+def get_flight_delays(df, carrier, id_airport, extrem_values = False):
+    df2 = df[(df['CARRIER'] == carrier) & (df['ORIGIN'] == id_airport)]
+    #_______________________________________
+    # remove extreme values before fitting
+    if extrem_values:
+        df2['DEP_DELAY'] = df2['DEP_DELAY'].apply(lambda x:x if x < 60 else np.nan)
+        df2.dropna(how = 'any')
+    #__________________________________
+    # Conversion: date + heure -> heure
+    df2.sort_values('CRS_DEP_TIME', inplace = True)
+    df2['heure_depart'] =  df2['CRS_DEP_TIME'].apply(lambda x:x.time())
+    #___________________________________________________________________
+    # regroupement des vols par heure de départ et calcul de la moyenne
+    test2 = df2['DEP_DELAY'].groupby(df2['heure_depart']).apply(get_stats).unstack()
+    test2.reset_index(inplace=True)
+    #___________________________________
+    # conversion de l'heure en secondes
+    fct = lambda x:x.hour*3600+x.minute*60+x.second
+    test2.reset_index(inplace=True)
+    test2['heure_depart_min'] = test2['heure_depart'].apply(fct)
+    return test2
 
-#dataset = tf.data.Dataset.from_tensor_slices((features, labels))
 
-#print(training_data)
+def linear_regression(test2):
+    test = test2[['mean', 'heure_depart_min']].dropna(how='any', axis = 0)
+    X = np.array(test['heure_depart_min'])
+    Y = np.array(test['mean'])
+    X = X.reshape(len(X),1)
+    Y = Y.reshape(len(Y),1)
+    regr = linear_model.LinearRegression()
+    regr.fit(X, Y)
+    result = regr.predict(X)
+    return X, Y, result
 
-#training_data, training_label = df, df.pop(ARR_TIME)
-#training_label = pd.DataFrame(df, columns=['ARR_DELAY'])
-#training_label = df['DEST_AIRPORT_ID']
-#eval_label = eval_data.pop('FL_NUM')
-#test_label = test_data.pop('FL_NUM')
+id_airport = 'RDU'
+df2 = df[(df['CARRIER'] == carrier) & (df['ORIGIN'] == id_airport)]
+df2['heure_depart'] =  df2['CRS_DEP_TIME'].apply(lambda x:x.time())
+df2['heure_depart'] = df2['heure_depart'].apply(lambda x:x.hour*3600+x.minute*60+x.second)
+#___________________
+# first case
+test2 = get_flight_delays(df, carrier, id_airport, False)
+X1, Y1, result2 = linear_regression(test2)
+#___________________
+# second case
+test3 = get_flight_delays(df, carrier, id_airport, True)
+X2, Y2, result3 = linear_regression(test3)
 
-training_input_fn = tf.estimator.inputs.pandas_input_fn(x=training_data, y=training_label, batch_size=0, shuffle=False)
+fig1 = Figure_style(8, 4, 1, 1)
+fig1.pos_update(0, 0)
+fig1.cust_scatter(df2['heure_depart'], df2['DEP_DELAY'], markeredge = True)
+fig1.cust_plot(X1, Y1, color = 'b', linestyle = ':', linewidth = 2, marker = ('b','s', 10))
+fig1.cust_plot(X2, Y2, color = 'g', linestyle = ':', linewidth = 2, marker = ('g','X', 12))
+fig1.cust_plot(X1, result2, color = 'b', linewidth = 3)
+fig1.cust_plot(X2, result3, color = 'g', linewidth = 3)
+fig1.style()
+fig1.set_ylabel('Delay (minutes)', fontsize = 14)
+fig1.set_xlabel('Departure time', fontsize = 14)
+#____________________________________
+# convert and set the x ticks labels
+fct_convert = lambda x: (int(x/3600) , int(divmod(x,3600)[1]/60))
+fig1.axs[fig1.ix, fig1.iy].set_xticklabels(['{:2.0f}h{:2.0f}m'.format(*fct_convert(x))
+                                            for x in fig1.axs[fig1.ix, fig1.iy].get_xticks()]);
+plt.savefig("output.png", dpi=400)
 
-#eval_input_fn = tf.estimator.inputs.pandas_input_fn(x=eval_data, y=eval_label, batch_size=64, shuffle=False)
-
-#test_input_fn = tf.estimator.inputs.pandas_input_fn(x=test_data, y=test_label, batch_size=10, shuffle=False)
-
-#Feature columns
-#carrier = tf.feature_column.categorical_column_with_vocabulary_list('CARRIER', vocabulary_list=['WN', 'OO', 'NK', 'AA', 'DL', 'UA'])
-#distance = tf.feature_column.numeric_column('DISTANCE')
-#dep_time = tf.feature_column.numeric_column('DEP_TIME')
-#taxi_out = tf.feature_column.numeric_column('TAXI_OUT')
-#fl_num = tf.feature_column.numeric_column('FL_NUM')
-#Linear Regressor
-
-linear_features = [distance, dep_time, taxi_out, fl_num]
-regressor = tf.estimator.LinearRegressor(feature_columns=linear_features)
-regressor.train(input_fn=training_input_fn, steps=10000)
-#regressor.evaluate(input_fn=eval_input_fn)
-
-#Deep Neural Network
-
-dnn_features = [
-    #numerical features
-    distance, dep_time, taxi_out, fl_num,
-    # densify categorical features:
-    tf.feature_column.indicator_column(carrier),
-]
-
-dnnregressor = tf.contrib.learn.DNNRegressor(feature_columns=dnn_features, hidden_units=[50, 30, 10])
-dnnregressor.fit(input_fn=training_input_fn, steps=10000)
-dnnregressor.evaluate(input_fn=eval_input_fn)
-
-#Predict
-
-predictions = list(dnnregressor.predict_scores(input_fn=training_input_fn))
-print(predictions)
-
-#predictionsLarge = list(dnnregressor.predict_scores(input_fn=eval_input_fn))
-#print(predictionsLarge)
-
-#predictionsLinear = list(regressor.predict_scores(input_fn=test_input_fn))
-#print(predictionsLinear)
-
-#predictionsLinearLarge = list(regressor.predict_scores(input_fn=eval_input_fn))
-#print(predictionsLinearLarge)
