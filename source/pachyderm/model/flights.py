@@ -8,6 +8,7 @@ import matplotlib.patches as patches
 import seaborn as sns
 import argparse
 import glob
+import os
 from matplotlib.patches import ConnectionPatch
 from collections import OrderedDict
 from matplotlib.gridspec import GridSpec

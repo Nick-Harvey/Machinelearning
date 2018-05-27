@@ -3,7 +3,7 @@
     "name": "allflights"
   },
   "transform": {
-    "image": "nickharvey/pachyflights",
+    "image": "nickharvey/pachyflights:latest",
     "cmd": [ "/bin/bash" ],
     "stdin": [
   "python3 flights.py --input_dir /pfs/ --output_dir /pfs/out"
