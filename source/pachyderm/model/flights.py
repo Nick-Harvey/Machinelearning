@@ -3,14 +3,14 @@ import pandas as pd
 import numpy as np
 import matplotlib as mpl
 mpl.use('pdf')
-
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import seaborn as sns
+import argparse
 from matplotlib.patches import ConnectionPatch
 from collections import OrderedDict
 from matplotlib.gridspec import GridSpec
-from mpl_toolkits.basemap import Basemap
+#from mpl_toolkits.basemap import Basemap
 from sklearn import metrics, linear_model
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
@@ -87,7 +87,13 @@ dtypes = {
     'DISTANCE': np.float32, 
 }
 
-path = './flight_data/201701.csv' # use your path
+parser = argparse.ArgumentParser()
+parser.add_argument("--input_dir", help="directory containing csv files")
+parser.add_argument("--output_dir", required=True, help="where to put output files")
+
+path = glob.glob(os.path.join(a.input_dir, "*.csv"))
+
+#path = './flight_data/201701.csv' # use your path
 # allFiles = glob.glob(path + "01/*.csv")
 # print("printing allfiles")
 # print(allFiles)
@@ -420,7 +426,6 @@ def get_flight_delays(df, carrier, id_airport, extrem_values = False):
     test2.reset_index(inplace=True)
     test2['heure_depart_min'] = test2['heure_depart'].apply(fct)
     return test2
-
 
 def linear_regression(test2):
     test = test2[['mean', 'heure_depart_min']].dropna(how='any', axis = 0)

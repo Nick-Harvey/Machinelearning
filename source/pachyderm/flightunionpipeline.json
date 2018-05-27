@@ -1,25 +1,32 @@
 {
   "pipeline": {
-    "name": "flightsanalysis”
+    "name": "allflights"
   },
   "transform": {
-    "cmd": [ "curl",
-        "-0",
-        "https://flights-dot-flightdata-201923.appspot.com/ingest"
-    ],
-    "acceptReturnCode": [0]
+    "image": "nickharvey/pachyflights",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [
+  "python3 flights.py --output_dir /pfs/out --input_dir /pfs/"
+    ]
   },
-  "parallelism": "1",
+  "egress": {
+    "URL": "gs://2017_2018_flights/output/"
+  },
+  "parallelism_spec": {
+    "constant" : 1
+  },
   "input": {
     "union" : [
       {
         "atom": {
           "repo": "2017flights",
           "glob": "/*"
+        }
       },
+      {
         "atom": {
           "repo": "2018flights",
-          "glob": "/*"
+          "glob": "/02/*"
         }
       }
     ] 

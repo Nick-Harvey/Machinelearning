@@ -5,6 +5,8 @@ service: flights
 manual_scaling:
   instances: 1
 
+runtime_config:
+    python_version: 3
 #[START env]
 env_variables:
     CLOUD_STORAGE_BUCKET: 2017_2018_flights

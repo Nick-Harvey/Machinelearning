@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "flight_scraper”
+    "name": "flight_scraper"
   },
   "transform": {
     "cmd": [ "curl",
@@ -9,17 +9,11 @@
     ],
     "acceptReturnCode": [0]
   },
-  "parallelism": "1",
-  "input": {
-    "atom": {
-      "repo": "2018flights"
-    },
   "input": {
     "cron": {
       "name": "tick",
-      "spec": "0 0 1 * *"
+      "spec": "*/2 * * * *"
     }
   },
   "incremental": true
-  }
 }
