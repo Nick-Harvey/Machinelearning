@@ -250,7 +250,7 @@ EXPOSE 6006 8888
 WORKDIR "/root"
 
 RUN apt-get install -y wget
-RUN wget https://raw.githubusercontent.com/Nick-Harvey/Machinelearning/master/source/pachyderm/model/flights.py 
+RUN wget https://raw.githubusercontent.com/Nick-Harvey/Machinelearning/master/source/pachyderm/model/flights.py
 RUN wget https://raw.githubusercontent.com/Nick-Harvey/Machinelearning/master/source/pachyderm/model/carriers.csv
 RUN wget https://raw.githubusercontent.com/Nick-Harvey/Machinelearning/master/source/pachyderm/model/airports.csv
 

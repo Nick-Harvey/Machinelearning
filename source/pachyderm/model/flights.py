@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import seaborn as sns
 import argparse
+import glob
 from matplotlib.patches import ConnectionPatch
 from collections import OrderedDict
 from matplotlib.gridspec import GridSpec
@@ -24,7 +25,7 @@ InteractiveShell.ast_node_interactivity = "last_expr"
 pd.options.display.max_columns = 50
 
 warnings.filterwarnings("ignore")
-
+:q
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_dir", help="directory containing csv files")
