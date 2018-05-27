@@ -9,6 +9,12 @@
   "python3 flights.py --input_dir /pfs/ --output_dir /pfs/out"
     ]
   },
+  "input": {
+    "atom": {
+      "repo": "2018flights",
+      "glob": "/"
+    }
+  },
   "egress": {
     "URL": "gs://2017_2018_flights/output/"
   },
@@ -18,23 +24,5 @@
   "resource_requests": {
     "memory": "10G",
     "cpu": 2
-  },
-  "input": {
-    "cross" : [
-      {
-        "atom": {
-          "name": "2017",
-          "repo": "2017flights",
-          "glob": "/"
-        }
-      },
-      {
-        "atom": {
-          "name": "2018",
-          "repo": "2018flights",
-          "glob": "/"
-        }
-      }
-    ] 
   }
 }

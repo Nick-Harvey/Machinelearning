@@ -25,7 +25,7 @@ InteractiveShell.ast_node_interactivity = "last_expr"
 pd.options.display.max_columns = 50
 
 warnings.filterwarnings("ignore")
-:q
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_dir", help="directory containing csv files")
