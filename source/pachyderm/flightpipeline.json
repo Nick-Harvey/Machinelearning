@@ -6,7 +6,7 @@
     "image": "nickharvey/pachyflights",
     "cmd": [ "/bin/bash" ],
     "stdin": [
-  "python3 flights.py --input_dir /pfs/ --output_dir /pfs/out"
+  "python3 flights.py --input_dir /pfs/2018flights/01/ --output_dir /pfs/out"
     ]
   },
   "input": {
