@@ -25,67 +25,6 @@ pd.options.display.max_columns = 50
 
 warnings.filterwarnings("ignore")
 
-# Removed the csv header as part of the ETL proces so we'll define them here.
-names = [
-    'FL_DATE', 
-    'UNIQUE_CARRIER', 
-    'AIRLINE_ID', 
-    'CARRIER', 
-    'FL_NUM',
-    'ORIGIN_AIRPORT_ID',
-    'ORIGIN_AIRPORT_SEQ_ID',
-    'ORIGIN_CITY_MARKET_ID',
-    'ORIGIN',
-    'DEST_AIRPORT_ID',
-    'DEST_AIRPORT_SEQ_ID',
-    'DEST_CITY_MARKET_ID',
-    'DEST',
-    'CRS_DEP_TIME',
-    'DEP_TIME',
-    'DEP_DELAY',
-    'TAXI_OUT',
-    'WHEELS_OFF',
-    'WHEELS_ON',
-    'TAXI_IN',
-    'CRS_ARR_TIME',
-    'ARR_TIME',
-    'ARR_DELAY',
-    'CANCELLED',
-    'CANCELLATION_CODE',
-    'DIVERTED',
-    'DISTANCE'
-]
-
-# Here we'll specify the dtypes.
-dtypes = {
-    'FL_DATE': str,
-    'UNIQUE_CARRIER': str,
-    'AIRLINE_ID': np.float64,
-    'CARRIER': str, 
-    'FL_NUM': np.float32, 
-    'ORIGIN_AIRPORT_ID': np.float32, 
-    'ORIGIN_AIRPORT_SEQ_ID': np.float32,
-    'ORIGIN_CITY_MARKET_ID': np.float32, 
-    'ORIGIN': str, 
-    'DEST_AIRPORT_ID': np.float32, 
-    'DEST_AIRPORT_SEQ_ID': np.float32, 
-    'DEST_CITY_MARKET_ID': np.float32, 
-    'DEST': str, 
-    'CRS_DEP_TIME': np.float32, 
-    'DEP_TIME': np.float32, 
-    'DEP_DELAY': np.float32, 
-    'TAXI_OUT': np.float32,
-    'WHEELS_OFF': np.float32,
-    'WHEELS_ON': np.float32,
-    'TAXI_IN': np.float32,
-    'CRS_ARR_TIME': np.float32,
-    'ARR_TIME': np.float32,
-    'ARR_DELAY': np.float32,
-    'CANCELLED': np.float32,
-    'CANCELLATION_CODE': str,
-    'DIVERTED': np.float32,
-    'DISTANCE': np.float32, 
-}
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_dir", help="directory containing csv files")
@@ -93,22 +32,6 @@ parser.add_argument("--output_dir", required=True, help="where to put output fil
 
 path = glob.glob(os.path.join(a.input_dir, "*.csv"))
 
-#path = './flight_data/201701.csv' # use your path
-# allFiles = glob.glob(path + "01/*.csv")
-# print("printing allfiles")
-# print(allFiles)
-# frame = pd.DataFrame()
-# list_ = []
-# for file_ in allFiles:
-#     print(file_)
-#     df = pd.read_csv(file_,index_col=None, header=0)
-#     list_.append(df)
-# frame = pd.concat(list_)
-
-# Read the file.
-
-#df = pd.concat([pd.read_csv(f) for f in glob.glob(path +'*.csv')], names=names, ignore_index = True)
-#df = pd.read_csv(path, header=0, skipinitialspace=True, names=names)
 df = pd.read_csv(path)
 print('Dataframe dimensions:', df.shape)
 
